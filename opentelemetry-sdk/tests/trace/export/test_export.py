@@ -513,19 +513,32 @@ class TestBatchSpanProcessor(ConcurrencyTestBase):
         with mock.patch.object(span_processor.condition, "wait") as mock_wait:
             resource = Resource.create({})
             _create_start_and_end_span("foo", span_processor, resource)
-            self.assertTrue(export_event.wait(2))
 
-            # give some time for exporter to loop
-            # since wait is mocked it should return immediately
+            event_result = export_event.wait(2)
+            print(f"export_event.wait(2) returned {event_result}")
+            self.assertTrue(event_result)
+
+            print("Before sleep")
             time.sleep(0.1)
-            mock_wait_calls = list(mock_wait.mock_calls)
+            print("After sleep")
 
-            # find the index of the call that processed the singular span
+            mock_wait_calls = list(mock_wait.mock_calls)
+            print("mock_wait_calls:", mock_wait_calls)
+
             for idx, wait_call in enumerate(mock_wait_calls):
                 _, args, __ = wait_call
+                print(f"Wait call {idx}: args[0] = {args[0]}")
                 if args[0] <= 0:
-                    after_calls = mock_wait_calls[idx + 1 :]
+                    after_calls = mock_wait_calls[idx + 1:]
+                    print(f"Breaking loop at index {idx}, args[0] = {args[0]}")
                     break
+            else:
+                print("No wait call with args[0] <= 0 found. after_calls was not assigned.")
+
+            if 'after_calls' in locals():
+                print("after_calls:", after_calls)
+            else:
+                print("after_calls was not assigned.")
 
             self.assertTrue(
                 all(args[0] >= 0.05 for _, args, __ in after_calls)
