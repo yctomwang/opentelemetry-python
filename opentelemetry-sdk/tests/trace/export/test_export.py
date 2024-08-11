@@ -490,10 +490,10 @@ class TestBatchSpanProcessor(ConcurrencyTestBase):
 
         span_processor.shutdown()
 
-    @mark.skipif(
-        python_implementation() == "PyPy" and system() == "Windows",
-        reason="This test randomly fails in Windows with PyPy",
-    )
+    # @mark.skipif(
+    #     python_implementation() == "PyPy" and system() == "Windows",
+    #     reason="This test randomly fails in Windows with PyPy",
+    # )
     def test_batch_span_processor_reset_timeout(self):
         """Test that the scheduled timeout is reset on cycles without spans"""
         spans_names_list = []
