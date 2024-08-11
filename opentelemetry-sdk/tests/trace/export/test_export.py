@@ -539,7 +539,7 @@ class TestBatchSpanProcessor(ConcurrencyTestBase):
                 print("after_calls:", after_calls)
             else:
                 print("after_calls was not assigned.")
-            self.assertTrue(1==2)
+            # self.assertTrue(1==2)
             self.assertTrue(
                 all(args[0] >= 0.05 for _, args, __ in after_calls)
             )
